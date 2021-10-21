@@ -37,24 +37,24 @@ async def init_redis(_app: web.Application):
     )
 
 
-async def close_engine(_app: web.Application):
+async def close_engine(base_app: web.Application):
     """
     Close all active connections
     """
-    await _app["engine"].dispose()
+    await base_app["engine"].dispose()
 
 
-async def close_redis(_app: web.Application):
+async def close_redis(base_app: web.Application):
     """
     Close all active connections
     """
-    _app["redis"].close()
+    base_app["redis"].close()
 
 
-async def init_settings_module(_app: web.Application):
+async def init_settings_module(base_app: web.Application):
     if Config.settings_reader_app in Config.apps:
         with open(Config.ReadSettingsModule.table_schema_file, "r") as f:
-            _app["settings_table_schema"] = json.load(f)
+            base_app["settings_table_schema"] = json.load(f)
 
 
 def make_app() -> web.Application:

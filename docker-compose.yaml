@@ -6,7 +6,9 @@ services:
     image: postgres
     container_name: messenger-db
     env_file:
-      - deploy/.env.prod
+      - ./deploy/.env.prod
+    volumes:
+      - db_data:/var/lib/postgresql/data/
 
   cache:
     image: redis
@@ -16,30 +18,12 @@ services:
     image: rabbitmq
     container_name: messenger-rmq
 
-  consumer:
-    build: services/task_consumer
-    image: messenger-task-consumer
-    container_name: messenger-task-consumer
-    env_file:
-      - deploy/.env.prod
-    environment:
-      - POSTGRES_HOSTS=db
-      - REDIS_URL=redis://cache:6379/0
-      - RMQ_URL=amqp://guest:guest@rmq:5672
-    depends_on:
-      - db
-      - cache
-      - rmq
-      - messenger
-
   messenger:
     build: .
     image: messenger-app
     container_name: messenger-web
-    ports:
-      - "0.0.0.0:8080:8080"
     env_file:
-      - deploy/.env.prod
+      - ./deploy/.env.prod
     environment:
       - PORT=8080
       - WORKERS_NUM=2
@@ -51,3 +35,27 @@ services:
       - db
       - cache
       - rmq
+
+  consumer:
+    build: services/task_consumer
+    image: messenger-task-consumer
+    container_name: messenger-task-consumer
+    env_file:
+      - ./deploy/.env.prod
+    environment:
+      - POSTGRES_HOSTS=db
+      - REDIS_URL=redis://cache:6379/0
+      - RMQ_URL=amqp://guest:guest@rmq:5672
+    depends_on:
+      - messenger
+
+  nginx:
+    build: ./deploy/nginx
+    container_name: messenger-nginx
+    ports:
+      - 8080:80
+    depends_on:
+      - messenger
+
+volumes:
+  db_data:

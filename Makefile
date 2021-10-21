@@ -33,8 +33,7 @@ help:
 	@echo "make tests-html-coverage-report - Generate html coverage report"
 	@echo
 	@echo "Config:"
-	@echo "make show-config                - Show project envs"
-	@echo "make configure                  - Edit project envs"
+	@echo "make show-prod-config           - Show project prod envs"
 	@echo
 	@echo "Docker:"
 	@echo "make docker-build               - Build a docker image"
@@ -51,9 +50,6 @@ show-config:
 
 show-prod-config:
 	cat deploy/.env.prod
-
-configure:
-	./deploy/edit_envs
 
 
 pylint:
