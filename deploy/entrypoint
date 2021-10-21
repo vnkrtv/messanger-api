@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+cd /usr/share/python3/
+. /usr/share/python3/venv/bin/activate
+
+HOST="${HOST:-0.0.0.0}"
+PORT="${PORT:-8080}"
+
+WORKERS_NUM="${WORKERS_NUM:-2}"
+
+# Wait for DB
+sleep 5
+
+python -m alembic upgrade head
+
+gunicorn -w ${WORKERS_NUM} -k aiohttp.GunicornWebWorker -b ${HOST}:${PORT} messenger.app:app

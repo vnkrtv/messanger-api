@@ -1,0 +1,10 @@
+[flake8]
+ignore =
+    E501,
+    W503
+exclude =
+    messenger/db/alembic/*,
+    __init__.py
+     app.py,
+     routes.py,
+     settings.py

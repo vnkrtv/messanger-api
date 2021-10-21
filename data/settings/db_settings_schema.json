@@ -1,0 +1,8 @@
+{
+    "table_name": "users",
+    "settings_columns": [
+        "username",
+        "timezone",
+        "is_yandex_backend_school_student"
+    ]
+}

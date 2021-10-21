@@ -1,0 +1,64 @@
+build-and-run-tests:
+  stage: test
+  script:
+    - python3 -m venv venv
+    - ./venv/bin/python -m pip install -r requirements.dev.txt
+    - . ./deploy/.env.prod
+    - docker run --name pg -d -p 0.0.0.0:5432:5432 -e POSTGRES_USER=$TEST_POSTGRES_USER -e POSTGRES_DB=$TEST_POSTGRES_DB -e POSTGRES_PASSWORD=$TEST_POSTGRES_PASSWORD postgres
+    - docker run --name rmq -d -p 0.0.0.0:5672:5672 rabbitmq
+    - docker run --name redis -d -p 0.0.0.0:6379:6379 redis
+    - sleep 3
+    - ./venv/bin/python -m pylint ./messenger
+    - ./venv/bin/python -m pytest --cov=messenger ./tests/
+    - docker build -t app-messenger . # проверяем под конец, что контейнер корректно собирается
+# тесты не прогоняются через gitlab ci - cannot share the host's network namespace when user namespaces are enabled
+#    - docker build --network=host -f ./tests/java_tests/docker/tests.local.dockerfile -t tests .
+#    - docker run --network=host --privileged -e IMAGE_NAME=app-messenger -e TESTCONTAINERS_RYUK_DISABLED=true -v /var/run/docker.sock:/var/run/docker.sock --name tests tests
+
+#stages:
+#  - Build-project
+#  - Run-PostgreSQL-DB
+#  - Lint
+#  - Tests
+#
+#build-docker:
+#  stage: Build-Docker-Image
+#  script:
+#    - docker build -t $CI_REGISTRY_IMAGE .
+#    - docker run -d -p 8080:8080 $CI_REGISTRY_IMAGE
+#
+#.build-project:
+#  stage: Build-project
+#  script:
+#    - python3 -m venv venv
+#    - ./venv/bin/python -m pip install -r requirements.dev.txt
+#    - sleep 5
+#
+#.run-db:
+#  stage: Run-PostgreSQL-DB
+#  script:
+#    - . ./deploy/.env
+#    - docker run -d -p 0.0.0.0:5432:5432 -e POSTGRES_USER=$DB_USER -e POSTGRES_DB=$TEST_DB_NAME -e POSTGRES_PASSWORD=$DB_PASS -e POSTGRES_USER=$DB_USER postgres
+#    - sleep 3
+#
+#.lint:
+#  stage: Lint
+#  script:
+#   - ./venv/bin/python -m pylint ./messenger
+#
+#.tests:
+#  stage: Tests
+#  script:
+#   - ./venv/bin/python -m pytest ./tests/
+#
+#build-project:
+#  extends: .build-project
+#
+#run-db:
+#  extends: .run-db
+#
+#lint:
+#  extends: .lint
+#
+#tests:
+#  extends: .tests

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+read -r -p "Application port (default: 80): " PORT
+PORT=${PORT:-80}
+
+read -r -p "Workers number (default: 1): " WORKERS_NUM
+WORKERS_NUM=${WORKERS_NUM:-1}
+
+
+read -r -p "PostgreSQL host (default: localhost): " DB_HOST
+DB_HOST=${DB_HOST:-localhost}
+
+read -r -p "PostgreSQL port (default: 5432): " DB_PORT
+DB_PORT=${DB_PORT:-5432}
+
+read -r -p "PostgreSQL user (default: root): " DB_USER
+DB_USER=${DB_USER:-root}
+
+read -r -p "PostgreSQL user (default: password): " DB_PASS
+DB_PASS=${DB_PASS:-password}
+
+read -r -p "PostgreSQL user (default: yandex_messenger): " DB_NAME
+DB_NAME=${DB_NAME:-yandex_messenger}
+
+cat > deploy/.env <<EOF
+PORT=${PORT}
+
+WORKERS_NUM=${WORKERS_NUM}
+
+DB_HOST=${DB_HOST}
+DB_PORT=${DB_PORT}
+DB_USER=${DB_USER}
+DB_PASS=${DB_PASS}
+DB_NAME=${DB_NAME}
+
+TEST_DB_HOST=0.0.0.0
+TEST_DB_PORT=5432
+TEST_DB_USER=root
+TEST_DB_PASS=password
+TEST_DB_NAME=test
+EOF
+
+echo
+echo "Final config:"
+cat deploy/.env
