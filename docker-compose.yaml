@@ -31,6 +31,8 @@ services:
       - CACHE_TYPE=redis
       - REDIS_URL=redis://cache:6379/0
       - RMQ_URL=amqp://guest:guest@rmq:5672
+      - ECHO_DB=y
+      - ECHO_POOL=y
     depends_on:
       - db
       - cache
