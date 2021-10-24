@@ -11,4 +11,4 @@ build-and-run-tests:
     - ./venv/bin/python -m flake8 ./messenger
     - ./venv/bin/python -m pylint ./messenger
     - ./venv/bin/python -m pytest --cov=messenger ./tests/
-    - docker-compose build  # проверяем под конец, что приложение корректно собирается
+    - docker build .  # проверяем под конец, что приложение корректно собирается
