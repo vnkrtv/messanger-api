@@ -40,7 +40,7 @@ setup(
         'console_scripts': [
             '{0}-api = {0}.__main__:main'.format(module_name),
             '{0}-db = {0}.db.__main__:main'.format(module_name),
-            'run-task-consumer = {0}.utils.task_consumer.__main__:main'.format(module_name),
+            'messenger-run-task-consumer = {0}.utils.task_consumer.__main__:main'.format(module_name),
         ]
     },
     include_package_data=True

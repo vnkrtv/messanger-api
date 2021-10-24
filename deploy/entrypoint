@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-cd /usr/share/python3/
-. /usr/share/python3/venv/bin/activate
-
 # Vars for starting gunicorn
 HOST="${HOST:-0.0.0.0}"
 PORT="${PORT:-8080}"

@@ -48,9 +48,11 @@ services:
       - POSTGRES_HOSTS=db
       - REDIS_URL=redis://cache:6379/0
       - RMQ_URL=amqp://guest:guest@rmq:5672
-    entrypoint: /consumer_entrypoint
+    entrypoint: messenger-run-task-consumer
     depends_on:
-      - messenger
+      - db
+      - cache
+      - rmq
 
   nginx:
     build: ./deploy/nginx
