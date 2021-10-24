@@ -7,13 +7,13 @@ from typing import List, Callable
 
 from aiohttp import web, web_exceptions
 
-from .apps.base_handler import error_response, ErrMsg
-from .settings import Config
-from .apps.settings_reader.middlewares import user_settings_middleware
-from .apps.cache.middlewares import cache_middleware
-from .apps.auth.middlewares import auth_middleware
-from .apps.throttling.middlewares import throttling_middleware
-from .utils.exceptions.auth_exceptions import (
+from messenger.apps.base_handler import error_response, ErrMsg
+from messenger.settings import Config
+from messenger.apps.settings_reader.middlewares import user_settings_middleware
+from messenger.apps.cache.middlewares import cache_middleware
+from messenger.apps.auth.middlewares import auth_middleware
+from messenger.apps.throttling.middlewares import throttling_middleware
+from messenger.utils.exceptions.auth_exceptions import (
     LoginError,
     RegisterError,
     AccessDeniedError,

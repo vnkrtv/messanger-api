@@ -1,9 +1,9 @@
 from aiohttp import web
 
-from .apps.api.routes import register_api_routes
-from .apps.auth.routes import register_auth_routes
-from .apps.search.routes import register_search_routes
-from .settings import Config
+from messenger.apps.api.routes import register_api_routes
+from messenger.apps.auth.routes import register_auth_routes
+from messenger.apps.search.routes import register_search_routes
+from messenger.settings import Config
 
 
 def register_routes(app: web.Application):

@@ -11,9 +11,9 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine
 from aio_pika import Channel
 
-from .settings import Config
-from .task import TaskStatus
-from .task_manager import TaskManager
+from messenger.settings import Config
+from messenger.utils.rabbitmq.task import TaskStatus
+from messenger.utils.rabbitmq.task_manager import TaskManager
 
 
 class CustomEncoder(json.JSONEncoder):
@@ -56,7 +56,7 @@ async def on_task(
 
             sql = """
                 SELECT m.*
-                FROM to_tsquery(:prepered_query) q, 
+                FROM to_tsquery(:prepered_query) q,
                      messages m
                 JOIN chat_users cu ON m.chat_user_id = cu.chat_user_id
                 WHERE to_tsvector(text) @@ q AND cu.username = :username
@@ -65,8 +65,10 @@ async def on_task(
             async with engine.connect() as conn:
                 result = await conn.execute(
                     text(sql),
-                    {"username": task.username,
-                     "prepered_query": prepare_query(task.search)},
+                    {
+                        "username": task.username,
+                        "prepered_query": prepare_query(task.search),
+                    },
                 )
                 messages = [dict(_) for _ in result.mappings().fetchall()]
 
@@ -74,11 +76,11 @@ async def on_task(
             task.dumped_messages = json.dumps(messages, cls=CustomEncoder)
             task.status = TaskStatus.SUCCESS
         except Exception as e:
-            logging.error('error on processing task(task_id=%s)', task_id)
+            logging.error("error on processing task(task_id=%s)", task_id)
             task.status = TaskStatus.FAILED
-            raise Exception(e)
+            raise Exception(e) from e
         finally:
-            logging.error('complete processing task(task_id=%s)', task_id)
+            logging.info("complete processing task(task_id=%s)", task_id)
             await task_manager.put(task)
 
 

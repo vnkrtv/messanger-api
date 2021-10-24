@@ -22,7 +22,8 @@ disable=missing-docstring,
         invalid-name,
         line-too-long,
         fixme,
-        no-self-use
+        no-self-use,
+        abstract-method
 
 
 

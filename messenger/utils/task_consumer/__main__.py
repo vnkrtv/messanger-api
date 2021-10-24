@@ -5,8 +5,8 @@ import time
 import uvloop
 from aiomisc.log import basic_config
 
+from messenger.settings import Config
 from .consumer import run_consumer
-from .settings import Config
 
 
 def main():

@@ -7,12 +7,10 @@ from aiohttp import web
 from aiohttp_cache import setup_cache
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from .utils.rabbitmq import events
-from .routes import register_routes
-from .middlewares import get_middlewares
-from .settings import Config
-
-basic_config(Config.Logging.level, buffered=True)
+from messenger.utils.rabbitmq import events
+from messenger.routes import register_routes
+from messenger.middlewares import get_middlewares
+from messenger.settings import Config
 
 
 async def init_engine(_app: web.Application):
@@ -78,6 +76,3 @@ def make_app() -> web.Application:
     base_app.on_cleanup.append(events.close_rabbitmq)
 
     return base_app
-
-
-app = make_app()

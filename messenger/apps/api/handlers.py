@@ -99,11 +99,7 @@ class ChatMessages(BaseHandler):
             )
 
         limit = self.request.query.get("limit")
-        limit = (
-            int(limit)
-            if limit and not re.sub(r"[\d]+", '', limit)
-            else None
-        )
+        limit = int(limit) if limit and not re.sub(r"[\d]+", "", limit) else None
         if not limit or limit < 1 or limit > 1000:
             raise web_exceptions.HTTPBadRequest(reason=ErrMsg.BAD_PARAMETERS)
 

@@ -1,0 +1,8 @@
+include README.rst
+include requirements*.txt
+
+include messenger/alembic.ini
+include messenger/db/alembic/*
+include messenger/db/alembic/versions/*
+
+include messenger/utils/settings_reader/settings/*

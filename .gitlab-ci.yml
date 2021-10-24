@@ -2,7 +2,7 @@ build-and-run-tests:
   stage: test
   script:
     - python3 -m venv venv
-    - ./venv/bin/python -m pip install -r requirements.dev.txt
+    - ./venv/bin/python -m pip install .
     - . ./deploy/.env.prod
     - docker run --name pg -d -p 0.0.0.0:5432:5432 -e POSTGRES_USER=$TEST_POSTGRES_USER -e POSTGRES_DB=$TEST_POSTGRES_DB -e POSTGRES_PASSWORD=$TEST_POSTGRES_PASSWORD postgres
     - docker run --name rmq -d -p 0.0.0.0:5672:5672 rabbitmq
@@ -11,4 +11,4 @@ build-and-run-tests:
     - ./venv/bin/python -m flake8 ./messenger
     - ./venv/bin/python -m pylint ./messenger
     - ./venv/bin/python -m pytest --cov=messenger ./tests/
-    - docker build -t app-messenger . # проверяем под конец, что контейнер корректно собирается
+    - docker-compose build  # проверяем под конец, что приложение корректно собирается

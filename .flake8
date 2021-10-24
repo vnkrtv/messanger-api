@@ -1,7 +1,8 @@
 [flake8]
 ignore =
     E501,
-    W503
+    W503,
+    W0223
 exclude =
     messenger/db/alembic/*,
     __init__.py

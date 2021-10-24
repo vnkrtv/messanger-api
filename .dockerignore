@@ -1,5 +1,8 @@
 **
 
+!README.md
+!setup.py
+!MANIFEST.in
 !data
 !messenger
 !requirements*

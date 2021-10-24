@@ -8,7 +8,6 @@ from messenger.db.schema import metadata
 from messenger.settings import Config
 
 config = context.config
-fileConfig(config.config_file_name)
 target_metadata = metadata
 
 

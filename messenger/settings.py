@@ -13,11 +13,11 @@ from aiohttp_cache import RedisConfig
 
 
 class Config:
-    base_path = pathlib.Path(__file__).parent.parent
-    data_path = base_path / "data"
+    base_path = pathlib.Path(__file__).parent
 
     debug = getenv("DEBUG")
     tests = getenv("TESTS")
+    workers_num = int(getenv("WORKERS_NUM", 4))
 
     host = getenv("HOST", "0.0.0.0")
     port = getenv("PORT", "8080")
@@ -115,7 +115,9 @@ class Config:
 
     class ReadSettingsModule:
         user_id_header = "X-User"
-        users_settings_path = pathlib.Path(__file__).parent.parent / "data" / "settings"
+        users_settings_path = (
+            pathlib.Path(__file__).parent / "utils" / "settings_reader" / "settings"
+        )
         table_schema_file = users_settings_path / "db_settings_schema.json"
         settings_file = users_settings_path / "settings.json"
 
