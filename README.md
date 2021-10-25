@@ -1,40 +1,88 @@
-# Домашнее задание к 6 лекции
+# Messenger API
 
-Необходимо написать unit- и интеграционные тесты на код, написанный в предыдущих домашних заданиях.
+## Документация  
 
-## Обязательная часть:
-- создать папку tests в корне проекта
-- добиться покрытия 50% кода тестами
-- покрыть тестами ручку ping_db на 100%
-- использовать: flake8, pytest, unittest.mock
+Указана в спеке OpenAPI - swagger.yml
 
-## Бонусная часть:
-- добиться покрытия 70% кода тестами
-- написать e2e тест: регистрация пользователей, общение между ними в чате, получение отправленных и принятых сообщений
-- покрыть тестами защиту от роботов - [пункт 5](https://wiki.yandex.ru/backend/domashnie-zadanija-shbr/domashnee-zadanie-4/#uslovie) из домашнего задания к 4 лекции
-
-## Порядок выполнения и сдачи домашней работы
-Домашнее задание предполагает кросс-проверку: каждый студент будет проверять работы двух других студентов. По возможности менторы тоже могут дать свои комментарии к домашкам. 
-
-Что нужно сделать:
-1. Сделать форк репозитория
-2. Отвести ветку из `master` с названием `solution` 
-3. Выполнить домашнее задание и сделать Merge Request[^1] в ветку `master` (в своем форке)
-4. Выдать доступ проверяющим студентам из тикетов к своему форку (с ролью developer) используя почту @yandex.ru (нужно кликнуть на имя исполнителя в Тикете и на страничке исполнителя будет указан адрес почты)
-5. Добавить комментарий со ссылкой на Merge Request в тикеты
+Большинство команд, необходимых для работы с проектом, реализовано в виде make команд в Makefile:  
+- `make help` - доступные команды 
 
 
-Папка с кодом и ресурсами для тестов находится в tests корневой папки проекта.
-1. Нужно к библиотеке `pytest` установить пакет-плагин `pytest-cov`
-2. Дописать в конфигурационный файлик `pytest.ini` опцию `--cov .`
-3. Запустить тесты. После завершения тестов на экран выведется статистика и финальный процент покрытия.
-P.S. Если добавить опцию `--cov-report=html`, то рядом появится красивая интерактивная html-ка с более подробной статистикой.
+## Запуск  
+- Prod
+    - `make run-prod`
+- Dev
+    - `make venv`
+    - `make run-dev`  
+- Линтера кода  
+    - `make lint`  
+- Тестов  
+    - `make test` - запустит тесты
+    - `make tests-html-coverage-report` - запустит тесты и откроет в браузере отчет с покрытием кода тестами 
 
+## Регистрация и авторизация пользователей  
 
-## Чеклист:
-- проверить, что в тестах подключен статический анализ (flake8)
-- проверить процент покрытия кода тестами
-- хорошо ли структурированы тесты?
-- отсутствие тестов примитивных методов (геттеров, сеттеров и других методов с подобной простой логикой), отсутствие тестов чужих библиотек
-- все ли граничные случаи проверяются в тестах?
-- не слишком ли много всего проверяется в тестах? Может быть, стоит их разбить на несколько более простых?
+- Регистрация:  
+```sh
+$ curl -XPOST 0.0.0.0:8080/v1/auth/register -H 'Content-Type: application/json' -d '{"user_name": "some user", "password": "pass"}' -w '%{http_code}'
+201
+``` 
+- Получения session_id (в рамках приложения это тип токена доступа - возможно задать произвольный тип в секции Config.Auth.token_type в файле messenfer/settings.py):  
+```sh
+$ curl -XPOST 0.0.0.0:8080/v1/auth/login -H 'Content-Type: application/json' -d '{"user_name": "some user", "password": "pass"}'
+{"session_id": "5d3e9ce435ba11eca6b50242ac1f0006"}
+```
+- Для запросов к ручкам, требующих авторизацию, требуется указывать session_id в Authorization хедере:  
+```sh
+$ curl -X<method> 0.0.0.0:8080/<uri> -H 'Authorization: session_id 5d3e9ce435ba11eca6b50242ac1f0006' ...
+```  
+- Для прекращения пользовательской сессии достаточно выполнить logout запрос: 
+```sh
+$ curl -XPOST 0.0.0.0:8080/v1/auth/logout -H 'Authorization: session_id 5d3e9ce435ba11eca6b50242ac1f0006' -w '%{http_code}'  
+200
+
+```  
+
+# Домашнее задание к 7 лекции
+
+## TL;DR
+Написать ansible playbook, который:
+* Запустит контейнер с базой данных
+* Запустит контейнер с приложением
+
+### Выполнение
+1. Сделайте ветку `ansible` в репозитории с вашим проектом
+2. В ветке `ansible` в корне нужно создать 2 файла
+* `.gitlab-ci.yml` следующего содержания:
+```yml
+include:
+  - project: 'school/2021-09/backend/python/homeworks/7' # или 'school/2021-09/backend/java/homeworks/7' 
+    ref: master
+    file: '.gitlab-ci.yml'
+    
+variables:
+  APP_PORT: 8080 # порт, который слушает приложение при запуске
+```
+* `playbook.yml`, содержащий playbook для запуска контейнеров
+3. Создайте MR ветки `ansible` в `master`
+4. Проверка MR должна быть зеленой
+
+## Нюансы
+* В корне должен лежать `Dockerfile`, сборка контейнера будет выполняться командой `docker build -t $CI_REGISTRY_IMAGE .`
+* Для указания образа внутри `playbook.yml` используйте `{{ lookup('env', 'CI_REGISTRY_IMAGE') }}`, аналогично для проброса портов можно использовать переменную окружения APP_PORT
+
+## Как разрабатывать локально
+1. Устанавливаем зависимости: `pip install ansible==4.7.0 docker==5.0.2 docker-compose==1.29.2`
+2. Пишем `playbook.yml`
+3. Запускаем `ansible-playbook`. Т.к. у нас нет похода по ssh, применять мы будем локально: `ansible-playbook -c local -i localhost playbook.yml`
+
+## Варианты реализации
+1. Описать явно в `playbook`'e `docker_network`, 2 `docker_container`, пробросить порты, задать обоим контейнерам общую сеть
+2. Написать `docker-compose.yml` и применить его через `docker_compose` в `playbook`'e
+
+## Подсказки
+1. https://github.com/grigory51/shbr-devops/tree/master/presentation/03-run-ansible
+2. https://docs.ansible.com/ansible/latest/collections/community/docker/docker_container_module.html
+3. https://docs.ansible.com/ansible/latest/collections/community/docker/docker_network_module.html
+4. https://docs.ansible.com/ansible/latest/collections/community/docker/docker_compose_module.html
+5. https://docs.ansible.com/ansible/latest/collections/ansible/builtin/wait_for_module.html
