@@ -3,30 +3,37 @@ version: '3'
 services:
 
   db:
-    image: postgres
+    image: postgres:13.0
     container_name: messenger-db
     env_file:
       - ./deploy/.env.prod
     volumes:
       - db_data:/var/lib/postgresql/data/
+    networks:
+      - messenger_backend
 
   cache:
-    image: redis
+    image: redis:6.2.6
     container_name: messenger-cache
+    networks:
+      - messenger_backend
 
   rmq:
-    image: rabbitmq
+    image: rabbitmq:3.9.8
     container_name: messenger-rmq
+    networks:
+      - messenger_backend
 
   messenger:
     build: .
-    image: messenger-app
+    image: messenger-api:0.0.1
     container_name: messenger-web
     env_file:
       - ./deploy/.env.prod
     environment:
+      - HOST=0.0.0.0
       - PORT=8080
-      - WORKERS_NUM=1
+      - WORKERS_NUM=2
       - POSTGRES_HOSTS=db
       - CACHE_TYPE=redis
       - REDIS_URL=redis://cache:6379/0
@@ -37,10 +44,12 @@ services:
       - db
       - cache
       - rmq
+    networks:
+      - messenger_backend
 
   consumer:
     build: .
-    image: messenger-task-consumer
+    image: messenger-api:0.0.1
     container_name: messenger-task-consumer
     env_file:
       - ./deploy/.env.prod
@@ -53,14 +62,22 @@ services:
       - db
       - cache
       - rmq
+    networks:
+      - messenger_backend
 
   nginx:
     build: ./deploy/nginx
+    image: messenger-nginx:0.0.1
     container_name: messenger-nginx
     ports:
       - 8080:80
     depends_on:
       - messenger
+    networks:
+      - messenger_backend
 
 volumes:
   db_data:
+
+networks:
+  messenger_backend:

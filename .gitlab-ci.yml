@@ -3,7 +3,7 @@ build-and-run-tests:
   script:
     - python3 -m venv venv
     - ./venv/bin/python -m pip install .
-    - . ./deploy/.env.prod
+    - . ./deploy/.env.test
     - docker run --name pg -d -p 0.0.0.0:5432:5432 -e POSTGRES_USER=$TEST_POSTGRES_USER -e POSTGRES_DB=$TEST_POSTGRES_DB -e POSTGRES_PASSWORD=$TEST_POSTGRES_PASSWORD postgres
     - docker run --name rmq -d -p 0.0.0.0:5672:5672 rabbitmq
     - docker run --name redis -d -p 0.0.0.0:6379:6379 redis

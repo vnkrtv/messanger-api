@@ -56,6 +56,7 @@ async def init_settings_module(base_app: web.Application):
 
 
 def make_app() -> web.Application:
+    basic_config(Config.Logging.level, buffered=False)
     base_app = web.Application(middlewares=get_middlewares())
     setup_cache(
         base_app,
@@ -76,3 +77,6 @@ def make_app() -> web.Application:
     base_app.on_cleanup.append(events.close_rabbitmq)
 
     return base_app
+
+
+app = make_app()

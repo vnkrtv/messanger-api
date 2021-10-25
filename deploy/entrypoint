@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
-# Vars for starting gunicorn
-HOST="${HOST:-0.0.0.0}"
-PORT="${PORT:-8080}"
-WORKERS_NUM="${WORKERS_NUM:-2}"
-
 # Wait for DB
 sleep 5
 
+# Run migrations
 messenger-db upgrade head
+
+# Run app with gunicorn
 messenger-api
