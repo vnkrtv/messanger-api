@@ -61,6 +61,7 @@ async def on_task(
                 JOIN chat_users cu ON m.chat_user_id = cu.chat_user_id
                 WHERE to_tsvector(text) @@ q AND cu.username = :username
                 ORDER BY created_at DESC
+                LIMIT 100
             """
             async with engine.connect() as conn:
                 result = await conn.execute(

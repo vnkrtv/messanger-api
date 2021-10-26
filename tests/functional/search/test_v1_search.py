@@ -22,7 +22,7 @@ def base_path() -> str:
     "body",
     [
         {"message": "some message"},
-        {"message": 123},
+        {"message": 12312},
         {"message": "some message", "extra_param": 1234},
     ],
 )
@@ -63,7 +63,7 @@ async def test__create_task__failed__bad_body(
     "body",
     [
         {"message": "some message"},
-        {"message": 123},
+        {"message": 123324},
         {"message": "some message", "extra_param": 1234},
     ],
 )

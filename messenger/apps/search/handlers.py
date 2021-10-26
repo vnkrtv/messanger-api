@@ -26,7 +26,7 @@ class ChatsSearch(BaseHandler):
         Create search task with name chat_name
         """
         msg_search = await self.get_from_request(MessageSearch)
-        if not msg_search:
+        if not msg_search or len(msg_search.message) <= 3:
             raise web_exceptions.HTTPBadRequest(reason=ErrMsg.BAD_PARAMETERS)
 
         task_id = await events.create_task(
