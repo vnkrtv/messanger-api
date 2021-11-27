@@ -80,7 +80,7 @@ class BaseHandler(web.View):
 
     @property
     def user(self) -> Dict[str, Any]:
-        return self.request.app["user"]
+        return self.request["user"]
 
     @property
     async def db_is_alive(self) -> bool:

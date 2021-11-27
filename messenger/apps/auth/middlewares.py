@@ -35,6 +35,6 @@ async def auth_middleware(request: web.Request, handler: Callable) -> web.Respon
         await cache.delete(f"{username}_requests")
         raise AccessDeniedError(ErrMsg.SESSION_ID_EXPIRED)
 
-    request.app["user"] = {"username": username}
+    request["user"] = {"username": username}
 
     return await handler(request)
